@@ -1,7 +1,8 @@
-package com.example.sontbv.base_mvp_sample
+package com.example.sontbv.base_mvp_sample.ui.main
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.example.sontbv.base_mvp_sample.R
 
 class MainActivity : AppCompatActivity() {
 
