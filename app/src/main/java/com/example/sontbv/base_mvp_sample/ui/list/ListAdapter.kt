@@ -1,6 +1,7 @@
 package com.example.sontbv.base_mvp_sample.ui.list
 
 import android.content.Context
+import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,39 +14,36 @@ import com.example.sontbv.base_mvp_sample.data.db.model.Photo
 import com.example.sontbv.base_mvp_sample.widget.SquareImage
 import de.hdodenhof.circleimageview.CircleImageView
 
-class ListAdapter(context: Context, photos:List<Photo>): RecyclerView.Adapter<ListAdapter.MainViewHolder>(){
+class ListAdapter(private val context: Context, private val photos: MutableList<Photo>,
+                  fragment: Fragment): RecyclerView.Adapter<ListAdapter.ListViewHolder>() {
+
+    private val listener: ListAdapter.onItemClickListener
+
     private val TAG = "ListAdapter"
-    private val photos:List<Photo>
-    private val context:Context
+
     init {
-        this.context = context
-        this.photos = photos
+        this.listener = fragment as ListAdapter.onItemClickListener
     }
 
-    class MainViewHolder: RecyclerView.ViewHolder {
-        var username: TextView
-        var photo: SquareImage
-        var userAvatar: CircleImageView
-        constructor(viewHolder: View): super(viewHolder) {
-            username = viewHolder.findViewById(R.id.item_photo_username)
-            photo = viewHolder.findViewById(R.id.item_photo_photo)
-            userAvatar = viewHolder.findViewById(R.id.item_photo_user_avatar)
-        }
+    class ListViewHolder(viewHolder: View) : RecyclerView.ViewHolder(viewHolder) {
+        var username: TextView = viewHolder.findViewById(R.id.item_photo_username)
+        var photo: SquareImage = viewHolder.findViewById(R.id.item_photo_photo)
+        var userAvatar: CircleImageView = viewHolder.findViewById(R.id.item_photo_user_avatar)
     }
 
-    override fun onCreateViewHolder(p0: ViewGroup, p1: Int): MainViewHolder {
-        val itemView = LayoutInflater.from(p0.getContext())
-                .inflate(R.layout.item_photo, p0, false)
-        return MainViewHolder(itemView)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
+        val itemView = LayoutInflater.from(context)
+                .inflate(R.layout.item_photo, parent, false)
+        return ListViewHolder(itemView)
     }
 
     override fun getItemCount(): Int {
         return photos.size
     }
 
-    override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
         val photo = photos.get(position)
-        holder.username.setText(photo.user.username)
+        holder.username.text = photo.user.username
         Log.d(TAG, photo.toString() + "")
         Glide
                 .with(context)
@@ -55,5 +53,9 @@ class ListAdapter(context: Context, photos:List<Photo>): RecyclerView.Adapter<Li
                 .with(context)
                 .load(photo.user.profile_image.small)
                 .into(holder.userAvatar)
+    }
+
+    interface onItemClickListener {
+        fun itemDetail(photoId : String)
     }
 }

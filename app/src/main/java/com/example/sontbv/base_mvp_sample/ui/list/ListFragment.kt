@@ -1,7 +1,17 @@
 package com.example.sontbv.base_mvp_sample.ui.list
 
+import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import com.example.sontbv.base_mvp_sample.R
+import com.example.sontbv.base_mvp_sample.data.db.model.Photo
+import com.example.sontbv.base_mvp_sample.di.component.DaggerFragmentComponent
+import com.example.sontbv.base_mvp_sample.di.module.FragmentModule
+import kotlinx.android.synthetic.main.fragment_list.*
 import javax.inject.Inject
 
 class ListFragment: Fragment(), ListContract.View, ListAdapter.onItemClickListener {
@@ -14,33 +24,67 @@ class ListFragment: Fragment(), ListContract.View, ListAdapter.onItemClickListen
         return ListFragment()
     }
 
-    override fun hideProgressBar() {
-        progressbar.visibility = View.GONE
-        recyclerview.visibility = View.VISIBLE
-    }
-
-    override fun setPhotos(photos: List<Photo>) {
-        var adapter = ListAdapter(applicationContext, photos)
-        recyclerview.adapter = adapter
-        adapter.notifyDataSetChanged()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        injectDependency()
     }
 
     override fun onResume() {
         super.onResume()
-        view.showProgressBar()
-        getPhotos()
-        presenter.onResume()
+        showProgress(true)
+        presenter.getPhotos()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        presenter.onDestroy()
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        rootView = inflater.inflate(R.layout.fragment_list, container, false)
+        return rootView
     }
 
-    override fun onResponseFailure(throwable: Throwable) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        presenter.attach(this)
+        initView()
+    }
+
+    override fun showProgress(show: Boolean) {
+        if (show) {
+            progressbar.visibility = View.GONE
+            recyclerview.visibility = View.VISIBLE
+        } else {
+            progressbar.visibility = View.VISIBLE
+            recyclerview.visibility = View.GONE
+        }
+    }
+
+    override fun showErrorMessage(error: String) {
+        Log.e("Error", error)
+    }
+
+    override fun getPhotosSuccess(photos: List<Photo>) {
+        val adapter = ListAdapter(activity!!, photos.toMutableList(), this)
+        recyclerview.layoutManager = LinearLayoutManager(activity)
+        recyclerview.adapter = adapter
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun itemDetail(photoId: String) {
+        TODO("not implemented")
+    }
+
+    private fun injectDependency() {
+        val listComponent = DaggerFragmentComponent.builder()
+                .fragmentModule(FragmentModule())
+                .build()
+
+        listComponent.inject(this)
+    }
+
+    private fun initView() {
+        presenter.getPhotos()
+        showProgress(true)
     }
 
     companion object {
-        val TAG: String = "ListFragment"
+        const val TAG: String = "ListFragment"
     }
 }
