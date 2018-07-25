@@ -1,4 +1,4 @@
-package com.example.sontbv.base_mvp_sample.ui.main
+package com.example.sontbv.base_mvp_sample.ui.list
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -13,8 +13,8 @@ import com.example.sontbv.base_mvp_sample.data.db.model.Photo
 import com.example.sontbv.base_mvp_sample.widget.SquareImage
 import de.hdodenhof.circleimageview.CircleImageView
 
-class MainAdapter(context: Context, photos:List<Photo>): RecyclerView.Adapter<MainAdapter.MainViewHolder>(){
-    private val TAG = "MainAdapter"
+class ListAdapter(context: Context, photos:List<Photo>): RecyclerView.Adapter<ListAdapter.MainViewHolder>(){
+    private val TAG = "ListAdapter"
     private val photos:List<Photo>
     private val context:Context
     init {
