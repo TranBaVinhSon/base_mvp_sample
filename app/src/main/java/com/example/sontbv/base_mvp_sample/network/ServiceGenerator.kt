@@ -15,15 +15,12 @@ object ServiceGenerator {
     private val httpLoggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
     private val okHttpClientBuilder = OkHttpClient.Builder()
             .addInterceptor(httpLoggingInterceptor)
-            .addInterceptor(object: Interceptor{
-                @Throws(IOException::class)
-                override fun intercept(chain: Interceptor.Chain): Response {
-                    val request = chain.request().newBuilder()
-                            .addHeader("Authorization", "Client-ID " + Constants.APPLICATION_ID)
-                            .build()
-                    return chain.proceed(request)
-                }
-            })
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                        .addHeader("Authorization", "Client-ID " + Constants.APPLICATION_ID)
+                        .build()
+                chain.proceed(request)
+            }
     private val okHttpClient = okHttpClientBuilder.build()
     fun <T> createService(serviceClass:Class<T>):T? {
         if (retrofit == null)

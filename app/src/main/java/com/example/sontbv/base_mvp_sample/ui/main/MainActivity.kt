@@ -2,49 +2,69 @@ package com.example.sontbv.base_mvp_sample.ui.main
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
 import android.view.View
-import android.widget.Toast
 import com.example.sontbv.base_mvp_sample.R
 import com.example.sontbv.base_mvp_sample.data.db.model.Photo
-import kotlinx.android.synthetic.main.activity_main.*
+import com.example.sontbv.base_mvp_sample.di.component.DaggerActivityComponent
+import com.example.sontbv.base_mvp_sample.di.module.ActivityModule
+import com.example.sontbv.base_mvp_sample.ui.list.ListAdapter
+import com.example.sontbv.base_mvp_sample.ui.list.ListFragment
+import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), MainView{
+class MainActivity : AppCompatActivity(), MainContract.View {
 
-    private val presenter = MainPresenter(this)
+    @Inject lateinit var presenter: MainContract.Presenter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        recyclerview.layoutManager = LinearLayoutManager(applicationContext)
+        injectDependency()
 
+        presenter.attach(this)
     }
 
-    override fun showProgressBar() {
-        progressbar.visibility = View.VISIBLE
-        recyclerview.visibility = View.GONE
+    override fun showListFragment() {
+        supportFragmentManager.beginTransaction()
+                .disallowAddToBackStack()
+                .setCustomAnimations(AnimType.FADE.getAnimPair().first, AnimType.FADE.getAnimPair().second)
+                .replace(R.id.frame, ListFragment().newInstance(), ListFragment.TAG)
+                .commit()
     }
 
-    override fun hideProgressBar() {
-        progressbar.visibility = View.GONE
-        recyclerview.visibility = View.VISIBLE
+    override fun onBackPressed() {
+        val fragmentManager = supportFragmentManager
+        val fragment = fragmentManager.findFragmentByTag(MainActivity.TAG)
+
+        if (fragment == null) {
+            super.onBackPressed()
+        } else {
+            supportFragmentManager.popBackStack()
+        }
     }
 
-    override fun setPhotos(photos: List<Photo>) {
-        var adapter = MainAdapter(applicationContext, photos)
-        recyclerview.adapter = adapter
-        adapter.notifyDataSetChanged()
+    private fun injectDependency() {
+        val activityComponent = DaggerActivityComponent.builder()
+                .activityModule(ActivityModule(this))
+                .build()
+
+        activityComponent.inject(this)
     }
 
-    override fun onResume() {
-        super.onResume()
-        presenter.onResume()
+    enum class AnimType() {
+        SLIDE,
+        FADE;
+
+        fun getAnimPair(): Pair<Int, Int> {
+            when(this) {
+                SLIDE -> return Pair(R.anim.slide_left, R.anim.slide_right)
+                FADE -> return Pair(R.anim.fade_in, R.anim.fade_out)
+            }
+
+            return Pair(R.anim.slide_left, R.anim.slide_right)
+        }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        presenter.onDestroy()
-    }
-
-    override fun onResponseFailure(throwable: Throwable) {
+    companion object {
+        val TAG: String = "MainActivity"
     }
 }
