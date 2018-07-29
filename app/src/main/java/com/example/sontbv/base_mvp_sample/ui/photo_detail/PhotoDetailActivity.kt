@@ -8,6 +8,8 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.example.sontbv.base_mvp_sample.R
 import com.example.sontbv.base_mvp_sample.data.db.model.Photo
+import com.example.sontbv.base_mvp_sample.di.component.DaggerPhotoDetailActivityComponent
+import com.example.sontbv.base_mvp_sample.di.module.PhotoDetailActivityModule
 import kotlinx.android.synthetic.main.activity_photo_detail.*
 import javax.inject.Inject
 
@@ -19,6 +21,8 @@ class PhotoDetailActivity: AppCompatActivity(), PhotoDetailContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo_detail)
         var photoId: String = intent.getStringExtra("photoId")
+
+        injectDependency()
         presenter.attach(this)
         initView(photoId)
     }
@@ -52,5 +56,13 @@ class PhotoDetailActivity: AppCompatActivity(), PhotoDetailContract.View {
                 .with(applicationContext)
                 .load(photo.user.profile_image.small)
                 .into(activity_photo_detail_user_avatar)
+    }
+
+    private fun injectDependency() {
+        val activityComponent = DaggerPhotoDetailActivityComponent.builder()
+                .photoDetailActivityModule(PhotoDetailActivityModule(this))
+                .build()
+
+        activityComponent.inject(this)
     }
 }
