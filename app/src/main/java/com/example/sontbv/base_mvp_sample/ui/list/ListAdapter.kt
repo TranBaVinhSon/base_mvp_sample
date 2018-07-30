@@ -33,28 +33,16 @@ class ListAdapter(): RecyclerView.Adapter<ListAdapter.ListViewHolder>() {
         this.photos = photos
     }
 
-    inner class ListViewHolder : RecyclerView.ViewHolder {
-        var username: TextView
-        var photo: SquareImage
-        var userAvatar: CircleImageView
-        var itemLayout: FrameLayout
+    class ListViewHolder(viewHolder: View) :RecyclerView.ViewHolder(viewHolder) {
+        var username: TextView = viewHolder.findViewById(R.id.item_photo_username)
+        var photo: SquareImage = viewHolder.findViewById(R.id.item_photo_photo)
+        var userAvatar: CircleImageView = viewHolder.findViewById(R.id.item_photo_user_avatar)
+        var itemLayout: FrameLayout = viewHolder.findViewById(R.id.item_photo_layout)
 
-        constructor(viewHolder: View): super(viewHolder){
-            username = viewHolder.findViewById(R.id.item_photo_username)
-            photo = viewHolder.findViewById(R.id.item_photo_photo)
-            userAvatar = viewHolder.findViewById(R.id.item_photo_user_avatar)
-            itemLayout = viewHolder.findViewById(R.id.item_photo_layout)
-            itemLayout.setOnClickListener {
-                val position = getAdapterPosition()
-
-                val photoId = photos.get(position).id
-                val intent = Intent(context, PhotoDetailActivity::class.java)
-                intent.putExtra("photoId", photoId)
-                context.startActivity(intent)
-            }
+        fun bind(item: Photo) {
+            username.text = item.user.username
         }
     }
-
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
@@ -68,8 +56,11 @@ class ListAdapter(): RecyclerView.Adapter<ListAdapter.ListViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
-        val photo = photos.get(position)
-        holder.username.text = photo.user.username
+        val photo = photos[position]
+        holder.bind(photo)
+        holder.itemLayout.setOnClickListener {
+            listener.itemDetail(photo.id)
+        }
         Log.d(TAG, photo.toString() + "")
         Glide
                 .with(context)
