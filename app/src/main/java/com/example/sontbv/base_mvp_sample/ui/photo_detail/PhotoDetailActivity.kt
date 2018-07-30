@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 class PhotoDetailActivity: AppCompatActivity(), PhotoDetailContract.View {
 
-    lateinit var presenter: PhotoDetailContract.Presenter
+    @Inject lateinit var presenter: PhotoDetailContract.Presenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

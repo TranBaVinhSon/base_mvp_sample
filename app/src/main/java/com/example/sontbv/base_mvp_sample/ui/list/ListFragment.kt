@@ -1,5 +1,6 @@
 package com.example.sontbv.base_mvp_sample.ui.list
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -11,6 +12,7 @@ import com.example.sontbv.base_mvp_sample.R
 import com.example.sontbv.base_mvp_sample.data.db.model.Photo
 import com.example.sontbv.base_mvp_sample.di.component.DaggerFragmentComponent
 import com.example.sontbv.base_mvp_sample.di.module.FragmentModule
+import com.example.sontbv.base_mvp_sample.ui.photo_detail.PhotoDetailActivity
 import kotlinx.android.synthetic.main.fragment_list.*
 import javax.inject.Inject
 
@@ -68,7 +70,9 @@ class ListFragment: Fragment(), ListContract.View, ListAdapter.onItemClickListen
     }
 
     override fun itemDetail(photoId: String) {
-        TODO("not implemented")
+        val intent = Intent(context, PhotoDetailActivity::class.java)
+        intent.putExtra("photoId", photoId)
+        context!!.startActivity(intent)
     }
 
     private fun injectDependency() {
