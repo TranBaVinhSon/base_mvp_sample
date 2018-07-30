@@ -27,9 +27,9 @@ class ListPresenter: ListContract.Presenter {
                     view.getPhotosSuccess(photos)
                 }
                 else {
-                    view.showProgress(false)
                     view.showErrorMessage(response.message())
                 }
+                view.showProgress(false)
             }
             override fun onFailure(call: Call<List<Photo>>, t:Throwable) {
                 view.showErrorMessage(t.localizedMessage)

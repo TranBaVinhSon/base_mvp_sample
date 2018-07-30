@@ -1,5 +1,6 @@
 package com.example.sontbv.base_mvp_sample.ui.photo_detail
 
+import android.util.Log
 import com.example.sontbv.base_mvp_sample.data.db.model.Photo
 import com.example.sontbv.base_mvp_sample.network.ApiInterface
 import com.example.sontbv.base_mvp_sample.network.ServiceGenerator
@@ -22,14 +23,16 @@ class PhotoDetailPresenter: PhotoDetailContract.Presenter {
             override fun onResponse(call: Call<Photo>, response: Response<Photo>) {
                 if (response.isSuccessful) {
                     photo = response.body()!!
+                    view.getPhotoSuccess(photo)
                 }
                 else {
-                    view.showProgress(false)
                     view.showErrorMessage(response.message())
                 }
+                view.showProgress(false)
             }
             override fun onFailure(call: Call<Photo>, t:Throwable) {
                 view.showErrorMessage(t.localizedMessage)
+                view.showProgress(false)
             }
         })
 

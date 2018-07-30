@@ -29,11 +29,11 @@ class PhotoDetailActivity: AppCompatActivity(), PhotoDetailContract.View {
 
     override fun showProgress(show: Boolean) {
         if (show) {
-            progressbar.visibility = View.GONE
-            activity_photo_detail_photo.visibility = View.VISIBLE
-        } else {
             progressbar.visibility = View.VISIBLE
             activity_photo_detail_photo.visibility = View.GONE
+        } else {
+            progressbar.visibility = View.GONE
+            activity_photo_detail_photo.visibility = View.VISIBLE
         }
     }
 

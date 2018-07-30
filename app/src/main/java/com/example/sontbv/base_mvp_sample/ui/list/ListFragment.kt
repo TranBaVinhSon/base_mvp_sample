@@ -50,11 +50,11 @@ class ListFragment: Fragment(), ListContract.View, ListAdapter.onItemClickListen
 
     override fun showProgress(show: Boolean) {
         if (show) {
-            progressbar.visibility = View.GONE
-            recyclerview.visibility = View.VISIBLE
-        } else {
             progressbar.visibility = View.VISIBLE
             recyclerview.visibility = View.GONE
+        } else {
+            progressbar.visibility = View.GONE
+            recyclerview.visibility = View.VISIBLE
         }
     }
 
