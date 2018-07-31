@@ -8,6 +8,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.IOException
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 
 object ServiceGenerator {
@@ -28,6 +29,7 @@ object ServiceGenerator {
             retrofit = Retrofit.Builder()
                     .client(okHttpClient)
                     .baseUrl(Constants.BASE_API_URL)
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(MoshiConverterFactory.create())
                     .build()
         }

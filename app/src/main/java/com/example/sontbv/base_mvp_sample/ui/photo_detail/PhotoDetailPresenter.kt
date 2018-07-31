@@ -4,38 +4,43 @@ import android.util.Log
 import com.example.sontbv.base_mvp_sample.data.db.model.Photo
 import com.example.sontbv.base_mvp_sample.network.ApiInterface
 import com.example.sontbv.base_mvp_sample.network.ServiceGenerator
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.observers.DisposableSingleObserver
+import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class PhotoDetailPresenter: PhotoDetailContract.Presenter {
     private lateinit var view: PhotoDetailContract.View
+    private var disposable: CompositeDisposable = CompositeDisposable()
 
     override fun attach(view: PhotoDetailContract.View) {
         this.view = view
     }
 
     override fun getPhoto(id: String) {
-        var photo: Photo
         val apiInterface = ServiceGenerator.createService(ApiInterface::class.java)
-        val call = apiInterface!!.getPhoto(id)
-        call.enqueue(object: Callback<Photo> {
-            override fun onResponse(call: Call<Photo>, response: Response<Photo>) {
-                if (response.isSuccessful) {
-                    photo = response.body()!!
-                    view.getPhotoSuccess(photo)
-                }
-                else {
-                    view.showErrorMessage(response.message())
-                }
-                view.showProgress(false)
-            }
-            override fun onFailure(call: Call<Photo>, t:Throwable) {
-                view.showErrorMessage(t.localizedMessage)
-                view.showProgress(false)
-            }
-        })
+        disposable.add(
+                apiInterface!!.getPhoto(id)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(object : DisposableSingleObserver<Photo>(){
+                            override fun onSuccess(photo: Photo) {
+                                view.getPhotoSuccess(photo)
+                                view.showProgress(false)
+                            }
+                            override fun onError(e: Throwable) {
+                                view.showErrorMessage(e.localizedMessage)
+                                view.showProgress(false)
+                            }
+                        })
+        )
 
+    }
 
+    override fun onStop() {
+        disposable.clear()
     }
 }
