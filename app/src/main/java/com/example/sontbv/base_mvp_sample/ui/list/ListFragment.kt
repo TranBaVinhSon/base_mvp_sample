@@ -17,6 +17,9 @@ import kotlinx.android.synthetic.main.fragment_list.*
 import javax.inject.Inject
 
 class ListFragment: Fragment(), ListContract.View, ListAdapter.onItemClickListener {
+    companion object {
+        const val TAG: String = "ListFragment"
+    }
 
     @Inject lateinit var presenter: ListContract.Presenter
 
@@ -86,9 +89,5 @@ class ListFragment: Fragment(), ListContract.View, ListAdapter.onItemClickListen
     private fun initView() {
         presenter.getPhotos()
         showProgress(true)
-    }
-
-    companion object {
-        const val TAG: String = "ListFragment"
     }
 }

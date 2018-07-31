@@ -8,4 +8,6 @@ class MainPresenter: MainContract.Presenter {
         this.view = view
         view.showListFragment()
     }
+    override fun onStop() {
+    }
 }
